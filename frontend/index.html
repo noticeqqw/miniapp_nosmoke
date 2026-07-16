@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  *::-webkit-scrollbar{ display:none; }
+  body{ margin:0; font-family:'Golos Text',system-ui,sans-serif; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+  a{ color:#0A0A0A; text-decoration:none; } a:hover{ opacity:.7; }
+  @keyframes scrIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+  @keyframes popIn{ from{opacity:0; transform:scale(.94);} to{opacity:1; transform:none;} }
+</style>
+</helmet>
+<div style="min-height:100vh; background:#FFFFFF; font-family:'Golos Text',system-ui,sans-serif;">
+  <div style="max-width:420px; margin:0 auto; min-height:100vh; background:#FFFFFF; position:relative; box-shadow:0 0 0 1px #F1F1F1;">
+    <div style="width:100%; min-height:100vh; background:#FFFFFF; overflow:hidden; position:relative;">
+
+      <div style="height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 22px; border-bottom:1px solid #F1F1F1;">
+        <div style="display:flex; align-items:center; gap:11px;">
+          <div style="width:34px; height:34px; border-radius:10px; background:#0A0A0A; display:flex; align-items:center; justify-content:center; flex:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h13.5a2.5 2.5 0 0 0 0-5"/><rect x="3" y="15" width="10" height="3.5"/><path d="M19 10.5c1-.7 1-2 0-2.7"/></svg>
+          </div>
+          <div style="font-size:16px; font-weight:800; color:#0A0A0A; letter-spacing:-.3px;">Не парю</div>
+        </div>
+      </div>
+
+      <sc-if value="{{ showOnboarding }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; top:56px; left:0; right:0; bottom:0; overflow-y:auto; padding:24px 26px 30px; animation:scrIn .32s ease;">
+          <div style="width:52px; height:52px; border-radius:16px; background:#0A0A0A; display:flex; align-items:center; justify-content:center; margin-bottom:22px;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h13.5a2.5 2.5 0 0 0 0-5"/><rect x="3" y="15" width="10" height="3.5"/><path d="M19 10.5c1-.7 1-2 0-2.7"/><path d="M17 6c1.3-.8 1.3-2.6 0-3.5"/></svg>
+          </div>
+          <div style="font-size:28px; font-weight:800; line-height:1.12; color:#0A0A0A; letter-spacing:-.5px;">Бросаем вейп<br>вместе</div>
+          <div style="font-size:15px; color:#8A8A8A; margin-top:10px; line-height:1.45;">Настроим счётчик, и приложение<br>покажет твой прогресс каждый день.</div>
+
+          <div style="font-size:12px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:#0A0A0A; margin:30px 0 12px;">Когда ты бросил?</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <sc-for list="{{ dateChips }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+            </sc-for>
+          </div>
+          <label style="display:flex; align-items:center; justify-content:space-between; margin-top:12px; border:1px solid #EAEAEA; border-radius:14px; padding:13px 16px;">
+            <span style="font-size:14px; color:#6E6E6E;">Другая дата</span>
+            <input type="date" value="{{ formDate }}" onChange="{{ onDateInput }}" style="border:none; font-family:inherit; font-size:14px; font-weight:600; color:#0A0A0A; background:none; outline:none;">
+          </label>
+
+          <div style="font-size:12px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:#0A0A0A; margin:30px 0 6px;">Как ты парил?</div>
+          <div style="border:1px solid #EEE; border-radius:16px; padding:2px 16px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid #F2F2F2;">
+              <div style="font-size:14px; color:#1A1A1A;">Цена вейпа, ₽</div>
+              <div style="display:flex; align-items:center; gap:14px;">
+                <button onClick="{{ decPrice }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">−</button>
+                <div style="min-width:50px; text-align:center; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;">{{ vapePrice }}</div>
+                <button onClick="{{ incPrice }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">+</button>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid #F2F2F2;">
+              <div style="font-size:14px; color:#1A1A1A;">Хватает на, дней</div>
+              <div style="display:flex; align-items:center; gap:14px;">
+                <button onClick="{{ decDays }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">−</button>
+                <div style="min-width:34px; text-align:center; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;">{{ vapeDays }}</div>
+                <button onClick="{{ incDays }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">+</button>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0;">
+              <div style="font-size:14px; color:#1A1A1A;">Затяжек в вейпе</div>
+              <div style="display:flex; align-items:center; gap:14px;">
+                <button onClick="{{ decPuffs }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">−</button>
+                <div style="min-width:50px; text-align:center; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;">{{ vapePuffs }}</div>
+                <button onClick="{{ incPuffs }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px; background:#F5F5F5; border-radius:14px; padding:14px 16px; display:flex; align-items:baseline; gap:8px;">
+            <span style="font-size:13px; color:#7A7A7A;">Экономия в месяц —</span>
+            <span style="font-size:15px; font-weight:800; color:#0A0A0A; font-variant-numeric:tabular-nums;">{{ monthSaveStr }}</span>
+          </div>
+
+          <button onClick="{{ start }}" style="margin-top:20px; width:100%; height:54px; border-radius:16px; border:none; background:#0A0A0A; color:#fff; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;">Начать отслеживание</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showApp }}" hint-placeholder-val="{{ false }}">
+        <div style="display:contents;">
+        <div style="position:absolute; top:56px; bottom:74px; left:0; right:0; overflow-y:auto; padding:24px 24px 30px;">
+
+            <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+              <div style="animation:scrIn .3s ease; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding-bottom:12px;">
+                <div style="font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#B0B0B0;">Не парю уже</div>
+
+                <div style="margin-top:22px; font-size:124px; font-weight:800; line-height:.84; letter-spacing:-5px; color:#0A0A0A; font-variant-numeric:tabular-nums;">{{ daysStr }}</div>
+                <div style="margin-top:10px; font-size:22px; font-weight:600; color:#9A9A9A;">{{ daysWord }}</div>
+
+                <div style="margin-top:36px; display:inline-flex; align-items:center; gap:12px; background:#0A0A0A; border-radius:99px; padding:15px 30px;">
+                  <div style="font-size:32px; font-weight:700; color:#fff; font-variant-numeric:tabular-nums; letter-spacing:2px;">{{ hms }}</div>
+                </div>
+
+                <div style="margin-top:26px; font-size:13px; color:#B0B0B0;">с {{ quitDateLabel }}</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isCheckin }}" hint-placeholder-val="{{ false }}">
+              <div style="animation:scrIn .3s ease;">
+                <div style="font-size:22px; font-weight:800; color:#0A0A0A; letter-spacing:-.4px;">Ежедневная отметка</div>
+                <div style="font-size:13px; color:#9A9A9A; margin-top:4px;">{{ todayDateLabel }}</div>
+
+                <div style="display:inline-flex; align-items:center; gap:7px; margin-top:16px; background:#F5F5F5; border-radius:99px; padding:7px 14px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16l-5.3 2.6 1-5.8L3.5 8.7l5.9-.9z"/></svg>
+                  <span style="font-size:13px; font-weight:700; color:#0A0A0A;">Серия {{ streakStr }} {{ streakWord }}</span>
+                </div>
+
+                <div style="display:flex; gap:6px; margin-top:22px;">
+                  <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                      <div style="font-size:11px; color:#A6A6A6;">{{ d.letter }}</div>
+                      <div style="width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; {{ d.style }}">{{ d.num }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+
+                <div style="font-size:16px; font-weight:800; color:#0A0A0A; margin-top:32px;">Как ты себя чувствуешь?</div>
+                <div style="font-size:13px; color:#9A9A9A; margin-top:4px;">Оцени сегодняшний день</div>
+                <div style="display:flex; justify-content:space-between; gap:8px; margin-top:16px;">
+                  <sc-for list="{{ moods }}" as="mo" hint-placeholder-count="5">
+                    <button onClick="{{ mo.onClick }}" style="width:52px; height:52px; border-radius:16px; font-size:18px; font-weight:800; font-family:inherit; cursor:pointer; font-variant-numeric:tabular-nums; {{ mo.style }}">{{ mo.n }}</button>
+                  </sc-for>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:8px; padding:0 2px;">
+                  <span style="font-size:11px; color:#B0B0B0;">тяжело</span>
+                  <span style="font-size:11px; color:#B0B0B0;">отлично</span>
+                </div>
+
+                <sc-if value="{{ todayMarked }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:22px; background:#0A0A0A; border-radius:18px; padding:18px 20px; animation:popIn .25s ease;">
+                    <div style="font-size:15px; font-weight:700; color:#fff;">Отмечено · {{ moodWord }}</div>
+                    <div style="font-size:12px; color:#9A9A9A; margin-top:4px; line-height:1.4;">Каждый отмеченный день — это выигранная борьба. Возвращайся завтра.</div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isTips }}" hint-placeholder-val="{{ false }}">
+              <div style="animation:scrIn .3s ease;">
+                <div style="font-size:22px; font-weight:800; color:#0A0A0A; letter-spacing:-.4px;">Советы</div>
+
+                <div style="margin-top:16px; border-radius:20px; background:#0A0A0A; padding:20px;">
+                  <div style="font-size:10px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:#7C7C7C;">Совет дня · {{ tipOfDay.cat }}</div>
+                  <div style="font-size:16px; line-height:1.5; color:#fff; margin-top:10px; font-weight:500;">{{ tipOfDay.text }}</div>
+                </div>
+
+                <div style="display:flex; gap:8px; margin-top:20px; flex-wrap:wrap;">
+                  <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
+                    <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+                  </sc-for>
+                </div>
+
+                <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px;">
+                  <sc-for list="{{ tipsList }}" as="tip" hint-placeholder-count="5">
+                    <div style="border:1px solid #ECECEC; border-radius:16px; padding:16px 17px;">
+                      <div style="font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#A0A0A0;">{{ tip.cat }}</div>
+                      <div style="font-size:14px; line-height:1.5; color:#1A1A1A; margin-top:8px;">{{ tip.text }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+              <div style="animation:scrIn .3s ease;">
+                <div style="display:flex; align-items:center; gap:14px;">
+                  <div style="width:56px; height:56px; border-radius:50%; background:#0A0A0A; display:flex; align-items:center; justify-content:center; flex:none;">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h13.5a2.5 2.5 0 0 0 0-5"/><rect x="3" y="15" width="10" height="3.5"/><path d="M19 10.5c1-.7 1-2 0-2.7"/></svg>
+                  </div>
+                  <div>
+                    <div style="font-size:18px; font-weight:800; color:#0A0A0A;">Мой прогресс</div>
+                    <div style="font-size:13px; color:#9A9A9A; margin-top:2px;">Бросил {{ quitDateLabel }}</div>
+                  </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px;">
+                  <div style="border:1px solid #EEE; border-radius:18px; padding:16px;">
+                    <div style="font-size:22px; font-weight:800; color:#0A0A0A; font-variant-numeric:tabular-nums;">{{ daysStr }}</div>
+                    <div style="font-size:11px; color:#9A9A9A; margin-top:4px;">{{ daysWord }} без вейпа</div>
+                  </div>
+                  <div style="border:1px solid #EEE; border-radius:18px; padding:16px;">
+                    <div style="font-size:22px; font-weight:800; color:#0A0A0A; font-variant-numeric:tabular-nums;">{{ streakStr }}</div>
+                    <div style="font-size:11px; color:#9A9A9A; margin-top:4px;">{{ streakWord }} серии</div>
+                  </div>
+                  <div style="border:1px solid #EEE; border-radius:18px; padding:16px;">
+                    <div style="font-size:22px; font-weight:800; color:#0A0A0A; font-variant-numeric:tabular-nums;">{{ moneyStr }}</div>
+                    <div style="font-size:11px; color:#9A9A9A; margin-top:4px;">сэкономлено</div>
+                  </div>
+                  <div style="border:1px solid #EEE; border-radius:18px; padding:16px;">
+                    <div style="font-size:22px; font-weight:800; color:#0A0A0A; font-variant-numeric:tabular-nums;">{{ puffsStr }}</div>
+                    <div style="font-size:11px; color:#9A9A9A; margin-top:4px;">затяжек не сделано</div>
+                  </div>
+                </div>
+
+                <div style="font-size:12px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:#0A0A0A; margin:28px 0 10px;">Параметры</div>
+                <div style="border:1px solid #EEE; border-radius:16px; padding:2px 16px;">
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid #F2F2F2;">
+                    <div style="font-size:14px; color:#1A1A1A;">Цена вейпа, ₽</div>
+                    <div style="display:flex; align-items:center; gap:14px;">
+                      <button onClick="{{ decPrice }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">−</button>
+                      <div style="min-width:50px; text-align:center; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;">{{ vapePrice }}</div>
+                      <button onClick="{{ incPrice }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">+</button>
+                    </div>
+                  </div>
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid #F2F2F2;">
+                    <div style="font-size:14px; color:#1A1A1A;">Хватает на, дней</div>
+                    <div style="display:flex; align-items:center; gap:14px;">
+                      <button onClick="{{ decDays }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">−</button>
+                      <div style="min-width:34px; text-align:center; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;">{{ vapeDays }}</div>
+                      <button onClick="{{ incDays }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">+</button>
+                    </div>
+                  </div>
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0;">
+                    <div style="font-size:14px; color:#1A1A1A;">Затяжек в вейпе</div>
+                    <div style="display:flex; align-items:center; gap:14px;">
+                      <button onClick="{{ decPuffs }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">−</button>
+                      <div style="min-width:50px; text-align:center; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;">{{ vapePuffs }}</div>
+                      <button onClick="{{ incPuffs }}" style="width:30px; height:30px; border-radius:50%; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:18px; line-height:1; cursor:pointer; font-family:inherit;">+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <button onClick="{{ reset }}" style="margin-top:18px; width:100%; height:50px; border-radius:14px; border:1px solid #E2E2E2; background:#fff; color:#0A0A0A; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;">Начать заново</button>
+              </div>
+            </sc-if>
+
+          </div>
+
+          <div style="position:absolute; bottom:0; left:0; right:0; height:74px; background:#fff; border-top:1px solid #F1F1F1; display:flex; padding:8px 8px 16px;">
+            <button onClick="{{ navHome }}" style="flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:2px 0; font-family:inherit;">
+              <div style="color: {{ colHome }}; display:flex;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11.5 12 4l8.5 7.5"/><path d="M5.5 10v9.5h13V10"/></svg></div>
+              <div style="font-size:10px; font-weight:600; color: {{ colHome }};">Главная</div>
+            </button>
+            <button onClick="{{ navCheckin }}" style="flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:2px 0; font-family:inherit;">
+              <div style="color: {{ colCheckin }}; display:flex;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.4 12.2l2.4 2.4 4.8-5.2"/></svg></div>
+              <div style="font-size:10px; font-weight:600; color: {{ colCheckin }};">Отметка</div>
+            </button>
+            <button onClick="{{ navTips }}" style="flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:2px 0; font-family:inherit;">
+              <div style="color: {{ colTips }}; display:flex;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 18h5"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-3.8 10.6c.7.6 1.1 1.3 1.2 2.4h5.2c.1-1.1.5-1.8 1.2-2.4A6 6 0 0 0 12 3Z"/></svg></div>
+              <div style="font-size:10px; font-weight:600; color: {{ colTips }};">Советы</div>
+            </button>
+            <button onClick="{{ navProfile }}" style="flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:2px 0; font-family:inherit;">
+              <div style="color: {{ colProfile }}; display:flex;"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.8"/><path d="M4.8 20c1-4 4-5.6 7.2-5.6S18.2 16 19.2 20"/></svg></div>
+              <div style="font-size:10px; font-weight:600; color: {{ colProfile }};">Профиль</div>
+            </button>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 458, &quot;height&quot;: 912 },
+  &quot;heroDark&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Оформление&quot; },
+  &quot;showMilestones&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Оформление&quot; },
+  &quot;showSavings&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Оформление&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    loaded: false,
+    onboarded: false,
+    quitDate: null,
+    vapePrice: 2000,
+    vapeDays: 14,
+    vapePuffs: 600,
+    screen: 'onboarding',
+    checkins: {},
+    filter: 'Все',
+    formDate: null,
+    now: Date.now(),
+  };
+
+  KEY = 'noVape.v1';
+  API_BASE = '/api';
+  MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  WD = ['вс','пн','вт','ср','чт','пт','сб'];
+  WDFULL = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+  MOODW = ['','Тяжёлый день','Трудный день','Обычный день','Хороший день','Отличный день'];
+
+  TIPS = [
+    { cat:'Тяга', text:'Тяга к вейпу длится всего 3–5 минут. Переждите её: выпейте воды или сделайте десять медленных вдохов.' },
+    { cat:'Привычка', text:'Уберите вейп и зарядку подальше. Чем сложнее сделать затяжку, тем легче пропустить тягу.' },
+    { cat:'Стресс', text:'Замените парение короткой прогулкой или разминкой. Движение снижает уровень стресса быстрее никотина.' },
+    { cat:'Мотивация', text:'Считайте не потери, а то, что получаете: деньги, чистое дыхание, вкус еды, спокойный сон.' },
+    { cat:'Тяга', text:'Держите руки и рот занятыми — вода, жвачка, эспандер. Часть привычки завязана на движениях, а не на никотине.' },
+    { cat:'Стресс', text:'Дыхание 4-7-8: вдох на 4 счёта, задержка на 7, выдох на 8. Повторите 4 раза, когда тянет затянуться.' },
+    { cat:'Привычка', text:'Меняйте ритуалы, связанные с парением: другой путь на работу, чай вместо привычной затяжки после еды.' },
+    { cat:'Мотивация', text:'Расскажите близким о своём решении. Поддержка и лёгкий контроль со стороны заметно усиливают результат.' },
+  ];
+
+  MS = (() => {
+    const M=60000, H=3600000, D=86400000;
+    return [
+      { t:'20 минут', dur:20*M, title:'Пульс и давление приходят в норму' },
+      { t:'8 часов', dur:8*H, title:'Уровень кислорода в крови восстанавливается' },
+      { t:'24 часа', dur:24*H, title:'Угарный газ полностью выведен из организма' },
+      { t:'48 часов', dur:48*H, title:'Возвращаются вкус и обоняние' },
+      { t:'72 часа', dur:72*H, title:'Дышать становится легче, бронхи расслабляются' },
+      { t:'2 недели', dur:14*D, title:'Улучшается кровообращение и работа лёгких' },
+      { t:'1 месяц', dur:30*D, title:'Меньше кашля и одышки' },
+      { t:'1 год', dur:365*D, title:'Риск болезней сердца снижается вдвое' },
+    ];
+  })();
+
+  componentDidMount() {
+    let init = { loaded: true, now: Date.now() };
+    try {
+      const raw = localStorage.getItem(this.KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        init = { ...init, ...d };
+        if (!d.screen || d.screen === 'onboarding') init.screen = d.onboarded ? 'home' : 'onboarding';
+      } else {
+        init.formDate = this.iso();
+      }
+    } catch (e) { init.formDate = this.iso(); }
+    this.setState(init);
+    this.timer = setInterval(() => this.setState({ now: Date.now() }), 1000);
+
+    try {
+      const tg = window.Telegram && window.Telegram.WebApp;
+      if (tg) { tg.ready(); tg.expand(); }
+    } catch (e) {}
+    this.syncState();
+  }
+  componentWillUnmount() { clearInterval(this.timer); }
+
+  tgInitData() {
+    try { return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) || ''; }
+    catch (e) { return ''; }
+  }
+  async api(path, opts = {}) {
+    const initData = this.tgInitData();
+    const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+    if (initData) headers['Authorization'] = 'tma ' + initData;
+    const res = await fetch(this.API_BASE + path, { ...opts, headers });
+    if (!res.ok) throw new Error('api ' + path + ' failed: ' + res.status);
+    return res.status === 204 ? null : res.json();
+  }
+  async syncState() {
+    try {
+      const data = await this.api('/state');
+      if (!data) return;
+      const wasOnboarding = this.state.screen === 'onboarding';
+      this.setState({
+        onboarded: !!data.onboarded,
+        quitDate: data.quitDate ?? null,
+        vapePrice: data.vapePrice ?? this.state.vapePrice,
+        vapeDays: data.vapeDays ?? this.state.vapeDays,
+        vapePuffs: data.vapePuffs ?? this.state.vapePuffs,
+        checkins: data.checkins ?? this.state.checkins,
+        screen: wasOnboarding && data.onboarded ? 'home' : this.state.screen,
+      }, () => this.save());
+    } catch (e) {
+      // офлайн или запущено вне Telegram — остаёмся на локальных данных
+    }
+  }
+  syncSettings(patch) {
+    this.api('/settings', { method: 'PATCH', body: JSON.stringify(patch) }).catch(() => {});
+  }
+
+  iso(ms) {
+    const x = (ms === undefined) ? new Date() : new Date(ms);
+    const y = x.getFullYear();
+    const m = String(x.getMonth() + 1).padStart(2, '0');
+    const d = String(x.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  save() {
+    const s = this.state;
+    try {
+      localStorage.setItem(this.KEY, JSON.stringify({
+        onboarded: s.onboarded, quitDate: s.quitDate, vapePrice: s.vapePrice,
+        vapeDays: s.vapeDays, vapePuffs: s.vapePuffs, screen: s.screen, checkins: s.checkins,
+      }));
+    } catch (e) {}
+  }
+  update(extra) { this.setState(extra, () => this.save()); }
+
+  plural(n, f) {
+    n = Math.abs(n) % 100; const n1 = n % 10;
+    if (n > 10 && n < 20) return f[2];
+    if (n1 > 1 && n1 < 5) return f[1];
+    if (n1 === 1) return f[0];
+    return f[2];
+  }
+  fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  pad(n) { return String(n).padStart(2, '0'); }
+
+  renderVals() {
+    const s = this.state;
+    const heroDark = this.props.heroDark ?? true;
+    const showMilestones = this.props.showMilestones ?? true;
+    const showSavings = this.props.showSavings ?? true;
+
+    const elapsed = s.quitDate ? Math.max(0, s.now - s.quitDate) : 0;
+    const D = 86400000;
+    const days = Math.floor(elapsed / D);
+    const hours = Math.floor((elapsed % D) / 3600000);
+    const mins = Math.floor((elapsed % 3600000) / 60000);
+    const secs = Math.floor((elapsed % 60000) / 1000);
+    const daysFloat = elapsed / D;
+
+    const costPerDay = s.vapePrice / s.vapeDays;
+    const moneySaved = costPerDay * daysFloat;
+    const puffsPerDay = s.vapePuffs / s.vapeDays;
+    const puffsAvoided = Math.floor(puffsPerDay * daysFloat);
+
+    // streak
+    let streak = 0, i = 0;
+    while (i < 4000) {
+      const key = this.iso(s.now - i * D);
+      if (s.checkins[key]) streak++;
+      else if (i !== 0) break;
+      i++;
+    }
+
+    const todayKey = this.iso(s.now);
+    const todayMood = s.checkins[todayKey] || 0;
+
+    const milestones = this.MS.map(m => {
+      const pct = Math.max(0, Math.min(100, (elapsed / m.dur) * 100));
+      const done = elapsed >= m.dur;
+      return { t: m.t, title: m.title, done, notDone: !done, pctLabel: Math.round(pct) + '%' };
+    });
+
+    const week = [];
+    for (let k = 6; k >= 0; k--) {
+      const ms = s.now - k * D;
+      const dt = new Date(ms);
+      const key = this.iso(ms);
+      const filled = !!s.checkins[key];
+      const isToday = k === 0;
+      let style;
+      if (filled) style = 'background:#0A0A0A; color:#fff; border:1.5px solid #0A0A0A;';
+      else if (isToday) style = 'background:#fff; color:#0A0A0A; border:1.5px solid #0A0A0A;';
+      else style = 'background:#F4F4F4; color:#C2C2C2; border:1.5px solid #F4F4F4;';
+      week.push({ letter: this.WD[dt.getDay()], num: dt.getDate(), style });
+    }
+
+    const moods = [1, 2, 3, 4, 5].map(n => {
+      const sel = todayMood === n;
+      const style = sel
+        ? 'background:#0A0A0A; color:#fff; border:1.5px solid #0A0A0A;'
+        : 'background:#fff; color:#0A0A0A; border:1.5px solid #E6E6E6;';
+      return { n, style, onClick: () => {
+        this.update({ checkins: { ...s.checkins, [todayKey]: n } });
+        this.api('/checkin', { method: 'POST', body: JSON.stringify({ date: todayKey, mood: n }) }).catch(() => {});
+      } };
+    });
+
+    const cats = ['Все', 'Тяга', 'Стресс', 'Привычка', 'Мотивация'];
+    const filters = cats.map(label => {
+      const active = s.filter === label;
+      const style = 'height:34px; padding:0 16px; border-radius:99px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; ' +
+        (active ? 'background:#0A0A0A; color:#fff; border:1px solid #0A0A0A;' : 'background:#fff; color:#6E6E6E; border:1px solid #E6E6E6;');
+      return { label, style, onClick: () => this.setState({ filter: label }) };
+    });
+    const tipsList = this.TIPS.filter(t => s.filter === 'Все' || t.cat === s.filter);
+    const tipOfDay = this.TIPS[days % this.TIPS.length];
+
+    const chipDefs = [{ label: 'Сегодня', off: 0 }, { label: 'Вчера', off: 1 }, { label: '3 дня назад', off: 3 }, { label: 'Неделю назад', off: 7 }];
+    const dateChips = chipDefs.map(c => {
+      const val = this.iso(Date.now() - c.off * D);
+      const active = s.formDate === val;
+      const style = 'height:40px; padding:0 16px; border-radius:12px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; ' +
+        (active ? 'background:#0A0A0A; color:#fff; border:1px solid #0A0A0A;' : 'background:#fff; color:#5E5E5E; border:1px solid #E6E6E6;');
+      return { label: c.label, style, onClick: () => this.setState({ formDate: val }) };
+    });
+
+    let quitDateLabel = '—';
+    if (s.quitDate) {
+      const q = new Date(s.quitDate);
+      quitDateLabel = `${q.getDate()} ${this.MONTHS[q.getMonth()]} ${q.getFullYear()}`;
+    }
+    const td = new Date(s.now);
+    const todayDateLabel = `${this.WDFULL[td.getDay()]}, ${td.getDate()} ${this.MONTHS[td.getMonth()]}`;
+
+    const monthSave = costPerDay * 30;
+
+    return {
+      loaded: s.loaded,
+      showOnboarding: !s.onboarded,
+      showApp: s.onboarded,
+      isHome: s.screen === 'home',
+      isCheckin: s.screen === 'checkin',
+      isTips: s.screen === 'tips',
+      isProfile: s.screen === 'profile',
+
+      daysStr: this.fmt(days),
+      daysWord: this.plural(days, ['день', 'дня', 'дней']),
+      hms: `${this.pad(hours)}:${this.pad(mins)}:${this.pad(secs)}`,
+      quitDateLabel,
+      todayDateLabel,
+      moneyStr: this.fmt(moneySaved) + ' ₽',
+      puffsStr: this.fmt(puffsAvoided),
+      streakStr: this.fmt(streak),
+      streakWord: this.plural(streak, ['день', 'дня', 'дней']),
+      monthSaveStr: this.fmt(monthSave) + ' ₽',
+
+      showSavings, showMilestones,
+      homeMarked: todayMood > 0,
+      homeNotMarked: todayMood === 0,
+      todayMarked: todayMood > 0,
+      moodWord: this.MOODW[todayMood],
+
+      milestones, week, moods, filters, tipsList, tipOfDay, dateChips,
+
+      vapePrice: s.vapePrice, vapeDays: s.vapeDays, vapePuffs: s.vapePuffs,
+      formDate: s.formDate,
+
+      heroBg: heroDark ? '#0A0A0A' : '#F5F5F5',
+      heroFg: heroDark ? '#FFFFFF' : '#0A0A0A',
+      heroMuted: heroDark ? '#8D8D8D' : '#9A9A9A',
+      heroLine: heroDark ? 'rgba(255,255,255,.14)' : '#E4E4E4',
+      heroBorder: heroDark ? 'none' : '1px solid #E8E8E8',
+
+      colHome: s.screen === 'home' ? '#0A0A0A' : '#BEBEBE',
+      colCheckin: s.screen === 'checkin' ? '#0A0A0A' : '#BEBEBE',
+      colTips: s.screen === 'tips' ? '#0A0A0A' : '#BEBEBE',
+      colProfile: s.screen === 'profile' ? '#0A0A0A' : '#BEBEBE',
+
+      navHome: () => this.update({ screen: 'home' }),
+      navCheckin: () => this.update({ screen: 'checkin' }),
+      navTips: () => this.update({ screen: 'tips' }),
+      navProfile: () => this.update({ screen: 'profile' }),
+      goCheckin: () => this.update({ screen: 'checkin' }),
+
+      incPrice: () => { const v = Math.min(10000, s.vapePrice + 100); this.update({ vapePrice: v }); this.syncSettings({ vapePrice: v }); },
+      decPrice: () => { const v = Math.max(100, s.vapePrice - 100); this.update({ vapePrice: v }); this.syncSettings({ vapePrice: v }); },
+      incDays: () => { const v = Math.min(60, s.vapeDays + 1); this.update({ vapeDays: v }); this.syncSettings({ vapeDays: v }); },
+      decDays: () => { const v = Math.max(1, s.vapeDays - 1); this.update({ vapeDays: v }); this.syncSettings({ vapeDays: v }); },
+      incPuffs: () => { const v = Math.min(3000, s.vapePuffs + 50); this.update({ vapePuffs: v }); this.syncSettings({ vapePuffs: v }); },
+      decPuffs: () => { const v = Math.max(50, s.vapePuffs - 50); this.update({ vapePuffs: v }); this.syncSettings({ vapePuffs: v }); },
+
+      onDateInput: (e) => this.setState({ formDate: e.target.value }),
+
+      start: () => {
+        const fd = s.formDate || this.iso();
+        const isToday = fd === this.iso();
+        const quit = isToday ? Date.now() : new Date(fd + 'T12:00:00').getTime();
+        this.update({ onboarded: true, quitDate: quit, screen: 'home' });
+        this.api('/onboard', { method: 'POST', body: JSON.stringify({
+          quitDate: quit, vapePrice: s.vapePrice, vapeDays: s.vapeDays, vapePuffs: s.vapePuffs,
+        }) }).catch(() => {});
+      },
+      reset: () => {
+        this.update({ onboarded: false, quitDate: null, checkins: {}, screen: 'onboarding', formDate: this.iso() });
+        this.api('/reset', { method: 'POST' }).catch(() => {});
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>
