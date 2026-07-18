@@ -15,7 +15,7 @@ routes = web.RouteTableDef()
 
 PRICE_MIN, PRICE_MAX = 100, 10000
 DAYS_MIN, DAYS_MAX = 1, 60
-PUFFS_MIN, PUFFS_MAX = 50, 3000
+PUFFS_MIN, PUFFS_MAX = 100, 30000
 
 
 def _clamp(value, lo, hi) -> int:

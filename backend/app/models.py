@@ -14,7 +14,7 @@ class User(Base):
     quit_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     vape_price: Mapped[int] = mapped_column(Integer, default=2000, nullable=False)
     vape_days: Mapped[int] = mapped_column(Integer, default=14, nullable=False)
-    vape_puffs: Mapped[int] = mapped_column(Integer, default=600, nullable=False)
+    vape_puffs: Mapped[int] = mapped_column(Integer, default=18000, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
